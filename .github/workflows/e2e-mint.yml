@@ -60,7 +60,9 @@ jobs:
       - name: Wait for RustFS ready
         run: |
           for i in {1..30}; do
-            if docker exec rustfs-single curl -sf http://localhost:9000/health >/dev/null; then
+            if docker run --rm --network rustfs-net curlimages/curl \
+              -sf http://rustfs-single:9000/health >/dev/null 2>&1; then
+              echo "RustFS is ready"
               exit 0
             fi
             sleep 2
@@ -208,7 +210,9 @@ jobs:
       - name: Wait for LB ready
         run: |
           for i in {1..60}; do
-            if docker run --rm --network rustfs-net curlimages/curl -sf http://lb:9000/health >/dev/null; then
+            if docker run --rm --network rustfs-net curlimages/curl \
+              -sf http://lb:9000/health >/dev/null; then
+              echo "Load balancer is ready"
               exit 0
             fi
             sleep 2
